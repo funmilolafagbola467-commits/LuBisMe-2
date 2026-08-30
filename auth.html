@@ -1,0 +1,308 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>LuBisMe — Sign up</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Sora:wght@400;500;600;700;800&family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --bg:#1A0F1F;
+    --bg-raise:#241628;
+    --bg-raise-2:#2E1B33;
+    --fg:#FAF6F2;
+    --muted:#B8A8BC;
+    --gold:#F2B807;
+    --coral:#FF6B7A;
+    --line:#3A2640;
+    --error:#FF6B7A;
+  }
+  *{box-sizing:border-box; margin:0; padding:0;}
+  body{
+    background:var(--bg);
+    color:var(--fg);
+    font-family:'Inter',sans-serif;
+    min-height:100vh;
+    display:flex;
+    flex-direction:column;
+    align-items:center;
+    padding:32px 20px;
+  }
+  a{color:inherit; text-decoration:none;}
+
+  .logo{
+    font-family:'Sora',sans-serif;
+    font-weight:800;
+    font-size:22px;
+    margin-bottom:40px;
+  }
+  .logo .dot{color:var(--gold);}
+
+  .card{
+    width:100%;
+    max-width:420px;
+    background:var(--bg-raise);
+    border:1px solid var(--line);
+    border-radius:20px;
+    padding:36px 32px;
+  }
+
+  .tabs{
+    display:flex;
+    background:var(--bg-raise-2);
+    border-radius:100px;
+    padding:4px;
+    margin-bottom:28px;
+  }
+  .tab{
+    flex:1;
+    text-align:center;
+    padding:10px;
+    border-radius:100px;
+    font-size:14px;
+    font-weight:600;
+    cursor:pointer;
+    color:var(--muted);
+    transition:background .18s ease, color .18s ease;
+  }
+  .tab.active{
+    background:var(--gold);
+    color:#1A0F1F;
+  }
+
+  h1{
+    font-family:'Sora',sans-serif;
+    font-size:24px;
+    font-weight:700;
+    margin-bottom:8px;
+  }
+  .sub{
+    font-size:14px;
+    color:var(--muted);
+    margin-bottom:28px;
+    line-height:1.5;
+  }
+
+  label{
+    display:block;
+    font-size:13px;
+    font-weight:600;
+    margin-bottom:8px;
+    color:var(--muted);
+  }
+  .field{margin-bottom:18px;}
+  input{
+    width:100%;
+    background:var(--bg-raise-2);
+    border:1px solid var(--line);
+    border-radius:10px;
+    padding:13px 14px;
+    color:var(--fg);
+    font-size:14.5px;
+    font-family:'Inter',sans-serif;
+  }
+  input:focus{
+    outline:none;
+    border-color:var(--gold);
+  }
+  input::placeholder{color:#6E5E72;}
+
+  .btn-primary{
+    width:100%;
+    background:var(--gold);
+    color:#1A0F1F;
+    font-weight:700;
+    font-size:15px;
+    padding:14px;
+    border-radius:10px;
+    border:none;
+    cursor:pointer;
+    margin-top:8px;
+  }
+  .btn-primary:focus-visible{
+    outline:2px solid var(--fg);
+    outline-offset:2px;
+  }
+
+  .divider{
+    display:flex;
+    align-items:center;
+    gap:12px;
+    margin:24px 0;
+    color:var(--muted);
+    font-size:12.5px;
+  }
+  .divider::before, .divider::after{
+    content:"";
+    flex:1;
+    height:1px;
+    background:var(--line);
+  }
+
+  .fine-print{
+    font-size:12.5px;
+    color:var(--muted);
+    text-align:center;
+    margin-top:20px;
+    line-height:1.5;
+  }
+  .fine-print a{
+    color:var(--gold);
+    font-weight:600;
+  }
+
+  .step-indicator{
+    display:flex;
+    gap:6px;
+    justify-content:center;
+    margin-bottom:24px;
+  }
+  .step-dot{
+    width:24px;
+    height:4px;
+    border-radius:100px;
+    background:var(--line);
+  }
+  .step-dot.done, .step-dot.current{
+    background:var(--gold);
+  }
+
+  .hidden{display:none;}
+</style>
+</head>
+<body>
+
+  <a href="index.html" class="logo">LuBisMe<span class="dot">.</span></a>
+
+  <!-- STEP 1: AUTH -->
+  <div class="card" id="auth-card">
+    <div class="tabs">
+      <div class="tab active" id="tab-signup" onclick="showTab('signup')">Sign up</div>
+      <div class="tab" id="tab-login" onclick="showTab('login')">Log in</div>
+    </div>
+
+    <div id="signup-form">
+      <h1>Create your account</h1>
+      <p class="sub">Set up your LuBisMe page in a couple of minutes — your fans just need one link.</p>
+
+      <div class="field">
+        <label for="su-name">Display name</label>
+        <input id="su-name" type="text" placeholder="e.g. Tobi Adekunle" />
+      </div>
+      <div class="field">
+        <label for="su-email">Email</label>
+        <input id="su-email" type="email" placeholder="you@example.com" />
+      </div>
+      <div class="field">
+        <label for="su-password">Password</label>
+        <input id="su-password" type="password" placeholder="At least 8 characters" />
+      </div>
+
+      <p class="fine-print hidden" id="signup-error" style="color:var(--error); margin-top:0; margin-bottom:14px;"></p>
+      <button class="btn-primary" id="signup-submit-btn" data-default-label="Continue to wallet setup">Continue to wallet setup</button>
+
+      <p class="fine-print">By continuing, you agree to LuBisMe's <a href="#">Terms</a> and <a href="#">Privacy Policy</a>.</p>
+    </div>
+
+    <div id="login-form" class="hidden">
+      <h1>Welcome back</h1>
+      <p class="sub">Log in to manage your gift page and wallets.</p>
+
+      <div class="field">
+        <label for="li-email">Email</label>
+        <input id="li-email" type="email" placeholder="you@example.com" />
+      </div>
+      <div class="field">
+        <label for="li-password">Password</label>
+        <input id="li-password" type="password" placeholder="Your password" />
+      </div>
+
+      <p class="fine-print hidden" id="login-error" style="color:var(--error); margin-top:0; margin-bottom:14px;"></p>
+      <button class="btn-primary" id="login-submit-btn" data-default-label="Log in">Log in</button>
+      <p class="fine-print"><a href="#">Forgot password?</a></p>
+    </div>
+  </div>
+
+  <!-- STEP 2: WALLET SETUP (hidden until continue clicked) -->
+  <div class="card hidden" id="wallet-card">
+    <div class="step-indicator">
+      <div class="step-dot done"></div>
+      <div class="step-dot current"></div>
+    </div>
+    <h1>Add your wallet addresses</h1>
+    <p class="sub">This is where fans' gifts will land. Add at least one — you can add the rest later from your dashboard.</p>
+
+    <div class="field">
+      <label for="w-btc">Bitcoin (BTC) address</label>
+      <input id="w-btc" type="text" placeholder="bc1q..." />
+    </div>
+    <div class="field">
+      <label for="w-eth">Ethereum (ETH) address</label>
+      <input id="w-eth" type="text" placeholder="0x..." />
+    </div>
+    <div class="field">
+      <label for="w-sol">Solana (SOL) address</label>
+      <input id="w-sol" type="text" placeholder="Solana wallet address" />
+    </div>
+    <div class="field">
+      <label for="w-usdt">USDT address (specify network)</label>
+      <input id="w-usdt" type="text" placeholder="TRC-20 / ERC-20 address" />
+    </div>
+
+    <p class="fine-print hidden" id="wallets-error" style="color:var(--error); margin-top:0; margin-bottom:14px;"></p>
+    <button class="btn-primary" id="wallets-submit-btn" data-default-label="Save and continue">Save and continue</button>
+  </div>
+
+  <!-- STEP 3: CONFIRM ADDRESSES -->
+  <div class="card hidden" id="confirm-card">
+    <div class="step-indicator">
+      <div class="step-dot done"></div>
+      <div class="step-dot done"></div>
+    </div>
+    <h1>Double-check these addresses</h1>
+    <p class="sub">Gifts sent to the wrong address can't be recovered. Take a moment to confirm each one is correct before we save them.</p>
+
+    <div class="field" id="confirm-btc-field">
+      <label>Bitcoin (BTC)</label>
+      <input type="text" id="confirm-btc" readonly />
+    </div>
+    <div class="field" id="confirm-eth-field">
+      <label>Ethereum (ETH)</label>
+      <input type="text" id="confirm-eth" readonly />
+    </div>
+    <div class="field" id="confirm-sol-field">
+      <label>Solana (SOL)</label>
+      <input type="text" id="confirm-sol" readonly />
+    </div>
+    <div class="field" id="confirm-usdt-field">
+      <label>USDT</label>
+      <input type="text" id="confirm-usdt" readonly />
+    </div>
+
+    <button class="btn-primary" id="confirm-submit-btn" data-default-label="Confirm and finish">Confirm and finish</button>
+  </div>
+
+  <script>
+    // Only tab-switching stays as plain inline JS — everything that
+    // touches Supabase (signup, login, wallet save) lives in
+    // js/auth-page.js as real async calls.
+    function showTab(tab){
+      document.getElementById('tab-signup').classList.toggle('active', tab==='signup');
+      document.getElementById('tab-login').classList.toggle('active', tab==='login');
+      document.getElementById('signup-form').classList.toggle('hidden', tab!=='signup');
+      document.getElementById('login-form').classList.toggle('hidden', tab!=='login');
+    }
+  </script>
+
+  <script type="module">
+    import { handleSignUp, handleLogIn, handleSaveWallets, handleFinishOnboarding } from './js/auth-page.js';
+
+    document.getElementById('signup-submit-btn').addEventListener('click', handleSignUp);
+    document.getElementById('login-submit-btn').addEventListener('click', handleLogIn);
+    document.getElementById('wallets-submit-btn').addEventListener('click', handleSaveWallets);
+    document.getElementById('confirm-submit-btn').addEventListener('click', handleFinishOnboarding);
+  </script>
+
+</body>
+</html>

@@ -1,0 +1,9 @@
+{
+  "rewrites": [
+    { "source": "/u/:slug", "destination": "/profile.html?slug=:slug" },
+    { "source": "/dashboard", "destination": "/dashboard.html" },
+    { "source": "/login", "destination": "/auth.html" },
+    { "source": "/signup", "destination": "/auth.html" },
+    { "source": "/:slug", "destination": "/profile.html?slug=:slug" }
+  ]
+}
