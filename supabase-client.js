@@ -8,8 +8,8 @@ import { createClient } from 'https://cdn.jsdelivr.net/npm/@supabase/supabase-js
 
 // Public anon key — safe to expose client-side. RLS policies in
 // schema.sql are what actually enforce who can read/write what.
-const SUPABASE_URL = 'https://YOUR_PROJECT_REF.supabase.co';
-const SUPABASE_ANON_KEY = 'YOUR_PUBLIC_ANON_KEY';
+const SUPABASE_URL = 'https://nirriromrpwghasjlgvo.supabase.co';
+const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Im5pcnJpcm9tcnB3Z2hhc2psZ3ZvIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODgwMDI2NTgsImV4cCI6MjEwMzU3ODY1OH0.BOS2YQT5RHnNadPIu7UEuDw8iZaDS-0OgYh9omdKLwQ';
 
 export const supabase = createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
 
