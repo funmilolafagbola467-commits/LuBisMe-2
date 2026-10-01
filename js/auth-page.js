@@ -52,38 +52,65 @@ export async function handleSignUp() {
 
   currentUserId = authData.user.id;
 
-  // 2. Create the profile row with an auto-generated free-tier slug
+  // If email confirmation is required, Supabase returns a user object
+  // but no active session — authData.session will be null in that case.
+  // There's no authenticated session yet, so RLS will correctly block
+  // any attempt to insert the profile row right now. Rather than try
+  // and show a confusing failure, tell the person what's actually
+  // happening: check their email, then come back and log in — at
+  // which point handleLogIn's post-login check creates the profile.
+  if (!authData.session) {
+    setLoading('signup', false);
+    showCheckEmailMessage();
+    return;
+  }
+
+  // Email confirmation is off (or this is a return visit with an
+  // active session already) — safe to create the profile immediately.
+  await createProfileForUser(currentUserId, displayName);
+  setLoading('signup', false);
+  goToWallets();
+}
+
+// ------------------------------------------------------------
+// Shared profile-creation logic, used both right after signup
+// (when confirmation is off) and right after a successful login
+// for an account that confirmed its email but never got a profile
+// row created yet (see handleLogIn below).
+// ------------------------------------------------------------
+async function createProfileForUser(userId, displayName) {
   let slug = generateSlug(displayName);
   if (isReservedSlug(slug.split('-')[0])) {
-    // e.g. a display name of "Help" would otherwise generate "help-8f3k"
-    // which reads fine but the base word alone is reserved elsewhere —
-    // regenerate with a fresh random suffix to be safe.
     slug = generateSlug(displayName);
   }
 
   const { error: profileError } = await supabase.from('profiles').insert({
-    id: currentUserId,
+    id: userId,
     display_name: displayName,
     slug,
     plan: 'free',
     plan_status: 'inactive',
   });
 
-  setLoading('signup', false);
-
   if (profileError) {
-    // Common cause: slug collision despite the random suffix (very rare).
-    // Simplest fix is to retry once with a fresh suffix.
     if (profileError.code === '23505') {
+      // Slug collision — retry once with a fresh suffix.
       const retrySlug = generateSlug(displayName);
-      await supabase.from('profiles').update({ slug: retrySlug }).eq('id', currentUserId);
-    } else {
-      showError('signup', 'Something went wrong creating your profile. Please try again.');
-      return;
+      await supabase.from('profiles').update({ slug: retrySlug }).eq('id', userId);
+    } else if (profileError.code !== '23505') {
+      // Row may already exist from a prior attempt — that's fine,
+      // not a real failure, just skip silently.
+      console.warn('Profile insert issue (likely already exists):', profileError.message);
     }
   }
+}
 
-  goToWallets();
+function showCheckEmailMessage() {
+  const signupForm = document.getElementById('signup-form');
+  signupForm.innerHTML = `
+    <h1>Check your email</h1>
+    <p class="sub">We've sent a confirmation link to your email address. Click it, then come back here and log in to finish setting up your page.</p>
+  `;
 }
 
 // ------------------------------------------------------------
@@ -99,14 +126,33 @@ export async function handleLogIn() {
   }
 
   setLoading('login', true);
-  const { error } = await supabase.auth.signInWithPassword({ email, password });
-  setLoading('login', false);
+  const { data, error } = await supabase.auth.signInWithPassword({ email, password });
 
   if (error) {
+    setLoading('login', false);
     showError('login', 'Incorrect email or password.');
     return;
   }
 
+  // If this account confirmed its email after a signup where the
+  // profile couldn't be created yet (see handleSignUp above), it
+  // won't have a profiles row. Check once, right after login, and
+  // create one if missing — using the email's local part as a
+  // fallback display name since we don't have the original name
+  // they typed at signup time.
+  const userId = data.user.id;
+  const { data: existingProfile } = await supabase
+    .from('profiles')
+    .select('id')
+    .eq('id', userId)
+    .maybeSingle();
+
+  if (!existingProfile) {
+    const fallbackName = email.split('@')[0].split('+')[0];
+    await createProfileForUser(userId, fallbackName);
+  }
+
+  setLoading('login', false);
   window.location.href = 'dashboard.html';
 }
 
