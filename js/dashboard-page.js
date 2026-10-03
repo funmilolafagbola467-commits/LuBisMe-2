@@ -112,11 +112,39 @@ function renderWallets(wallets) {
 
 function openWalletEditor(chain, existingWallet) {
   const newAddress = prompt(
-    `Enter your ${chain} address:`,
+    `Enter your ${chain} address (leave blank and tap OK to remove this wallet):`,
     existingWallet?.address || ''
   );
-  if (newAddress === null || newAddress.trim() === '') return;
+
+  if (newAddress === null) return; // user tapped Cancel — do nothing
+
+  if (newAddress.trim() === '') {
+    // Empty input is now a deliberate removal request, not a silent
+    // no-op — but only ask to confirm if there was actually something
+    // to remove.
+    if (existingWallet) {
+      const confirmed = confirm(`Remove your ${chain} address? Fans won't be able to send you ${chain} gifts until you add a new one.`);
+      if (confirmed) removeWalletAddress(chain);
+    }
+    return;
+  }
+
   saveWalletAddress(chain, newAddress.trim());
+}
+
+async function removeWalletAddress(chain) {
+  const user = await getCurrentUser();
+  const { error } = await supabase
+    .from('wallet_addresses')
+    .delete()
+    .eq('user_id', user.id)
+    .eq('chain', chain);
+
+  if (error) {
+    alert('Could not remove that address. Please try again.');
+    return;
+  }
+  initDashboard();
 }
 
 async function saveWalletAddress(chain, address) {
