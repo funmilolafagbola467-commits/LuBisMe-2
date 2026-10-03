@@ -169,4 +169,11 @@ function showNoWallets(profile) {
 }
 
 // ------------------------------------------------------------
-document.addEventListener('DOMContentLoaded', initProfilePage);
+document.addEventListener('DOMContentLoaded', () => {
+  initProfilePage();
+  // The copy button is static HTML (not generated dynamically like
+  // the chain tabs), so it needs its listener attached here rather
+  // than relying on an inline onclick in the markup.
+  const copyBtn = document.getElementById('copy-btn');
+  if (copyBtn) copyBtn.addEventListener('click', window.copyAddress);
+});
