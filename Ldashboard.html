@@ -1,0 +1,437 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>LuBisMe — Dashboard</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Sora:wght@400;500;600;700;800&family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --bg:#1A0F1F;
+    --bg-raise:#241628;
+    --bg-raise-2:#2E1B33;
+    --fg:#FAF6F2;
+    --muted:#B8A8BC;
+    --gold:#F2B807;
+    --coral:#FF6B7A;
+    --line:#3A2640;
+    --green:#3FBF7F;
+  }
+  *{box-sizing:border-box; margin:0; padding:0;}
+  body{
+    background:var(--bg);
+    color:var(--fg);
+    font-family:'Inter',sans-serif;
+    min-height:100vh;
+  }
+  a{color:inherit; text-decoration:none;}
+
+  /* TOPBAR */
+  .topbar{
+    display:flex;
+    align-items:center;
+    justify-content:space-between;
+    padding:20px 28px;
+    border-bottom:1px solid var(--line);
+  }
+  .logo{
+    height:30px;
+    width:auto;
+  }
+  .topbar-right{
+    display:flex;
+    align-items:center;
+    gap:16px;
+  }
+  .plan-pill{
+    font-size:12px;
+    font-weight:600;
+    padding:6px 14px;
+    border-radius:100px;
+    background:var(--bg-raise-2);
+    border:1px solid var(--line);
+    color:var(--muted);
+  }
+  .plan-pill.premium{
+    background:rgba(242,184,7,0.14);
+    border-color:var(--gold);
+    color:var(--gold);
+  }
+  .avatar-sm{
+    width:34px;
+    height:34px;
+    border-radius:8px;
+    background:linear-gradient(145deg, var(--coral), #d94f5c);
+    display:flex;
+    align-items:center;
+    justify-content:center;
+    font-weight:700;
+    font-size:13px;
+  }
+
+  .wrap{
+    max-width:920px;
+    margin:0 auto;
+    padding:40px 24px 80px;
+  }
+
+  h1{
+    font-family:'Sora',sans-serif;
+    font-size:28px;
+    font-weight:700;
+    margin-bottom:6px;
+  }
+  .page-sub{
+    font-size:14.5px;
+    color:var(--muted);
+    margin-bottom:36px;
+  }
+
+  /* GIFT LINK CARD */
+  .link-card{
+    background:linear-gradient(160deg, var(--bg-raise-2), var(--bg-raise));
+    border:1px solid var(--line);
+    border-radius:18px;
+    padding:28px;
+    margin-bottom:32px;
+    display:flex;
+    align-items:center;
+    justify-content:space-between;
+    gap:20px;
+    flex-wrap:wrap;
+  }
+  .link-card-label{
+    font-size:12.5px;
+    color:var(--muted);
+    font-weight:600;
+    text-transform:uppercase;
+    letter-spacing:0.05em;
+    margin-bottom:8px;
+  }
+  .link-card-url{
+    font-family:'Sora',sans-serif;
+    font-size:19px;
+    font-weight:600;
+    color:var(--gold);
+    word-break:break-all;
+    max-width:100%;
+  }
+  .link-card > div:first-child{
+    min-width:0;
+    flex:1;
+  }
+  .link-card-actions{
+    display:flex;
+    gap:10px;
+  }
+  .btn-ghost{
+    background:var(--bg-raise-2);
+    border:1px solid var(--line);
+    color:var(--fg);
+    font-size:13.5px;
+    font-weight:600;
+    padding:11px 18px;
+    border-radius:100px;
+    cursor:pointer;
+  }
+  .btn-gold{
+    background:var(--gold);
+    color:#1A0F1F;
+    border:none;
+    font-size:13.5px;
+    font-weight:700;
+    padding:11px 18px;
+    border-radius:100px;
+    cursor:pointer;
+  }
+
+  /* SECTION */
+  .section-head{
+    display:flex;
+    align-items:center;
+    justify-content:space-between;
+    margin-bottom:16px;
+  }
+  .section-head h2{
+    font-family:'Sora',sans-serif;
+    font-size:17px;
+    font-weight:700;
+  }
+
+  /* WALLETS */
+  .wallets{
+    display:flex;
+    flex-direction:column;
+    gap:10px;
+    margin-bottom:40px;
+  }
+  .wallet-item{
+    background:var(--bg-raise);
+    border:1px solid var(--line);
+    border-radius:14px;
+    padding:16px 20px;
+    display:flex;
+    align-items:center;
+    gap:14px;
+  }
+  .chain-badge{
+    width:38px;
+    height:38px;
+    border-radius:10px;
+    display:flex;
+    align-items:center;
+    justify-content:center;
+    font-size:13px;
+    font-weight:700;
+    flex-shrink:0;
+  }
+  .chain-badge.btc{background:rgba(247,147,26,0.16); color:#F7931A;}
+  .chain-badge.eth{background:rgba(138,146,178,0.16); color:#B5BCE0;}
+  .chain-badge.sol{background:rgba(20,241,149,0.14); color:#14F195;}
+  .chain-badge.usdt{background:rgba(38,161,123,0.16); color:#3FBF7F;}
+
+  .wallet-info{flex:1; min-width:0;}
+  .wallet-chain-name{font-size:13.5px; font-weight:600; margin-bottom:2px;}
+  .wallet-address{
+    font-size:13px;
+    color:var(--muted);
+    font-family:monospace;
+    white-space:nowrap;
+    overflow:hidden;
+    text-overflow:ellipsis;
+  }
+  .wallet-address.empty{
+    color:#6E5E72;
+    font-family:'Inter',sans-serif;
+    font-style:italic;
+  }
+  .wallet-edit{
+    font-size:13px;
+    font-weight:600;
+    color:var(--gold);
+    cursor:pointer;
+    flex-shrink:0;
+    background:none;
+    border:none;
+  }
+
+  /* UPGRADE BANNER */
+  .upgrade-banner{
+    background:var(--bg-raise);
+    border:1px solid var(--gold);
+    border-radius:18px;
+    padding:28px;
+    margin-bottom:40px;
+    display:flex;
+    align-items:center;
+    justify-content:space-between;
+    gap:20px;
+    flex-wrap:wrap;
+  }
+  .upgrade-banner h3{
+    font-family:'Sora',sans-serif;
+    font-size:17px;
+    margin-bottom:6px;
+  }
+  .upgrade-banner p{
+    font-size:13.5px;
+    color:var(--muted);
+    max-width:420px;
+    line-height:1.5;
+  }
+
+  /* SUBSCRIPTION INFO */
+  .sub-info{
+    background:var(--bg-raise);
+    border:1px solid var(--line);
+    border-radius:14px;
+    padding:22px 24px;
+    display:flex;
+    justify-content:space-between;
+    align-items:center;
+    flex-wrap:wrap;
+    gap:14px;
+  }
+  .sub-info-item{font-size:13.5px; color:var(--muted);}
+  .sub-info-item strong{color:var(--fg); display:block; font-size:15px; margin-top:4px;}
+  .status-active{color:var(--green); font-weight:600;}
+
+  @media (max-width:600px){
+    .link-card, .upgrade-banner{flex-direction:column; align-items:flex-start;}
+  }
+</style>
+</head>
+<body>
+
+  <div class="topbar">
+    <img src="assets/lubisme-logo-nav.png" alt="LuBisMe" class="logo">
+    <div class="topbar-right">
+      <span class="plan-pill">Regular plan</span>
+      <div class="avatar-sm">TA</div>
+    </div>
+  </div>
+
+  <div class="wrap">
+    <h1>Welcome back, Tobi</h1>
+    <p class="page-sub">Here's your gift page and everything you can manage from here.</p>
+
+    <div class="link-card">
+      <div>
+        <div class="link-card-label">Your gift link</div>
+        <div class="link-card-url">lubisme.com/u/tobi-8f3k</div>
+      </div>
+      <div class="link-card-actions">
+        <button class="btn-ghost">Copy link</button>
+        <a href="lubisme-profile.html" class="btn-gold">Preview page</a>
+      </div>
+    </div>
+
+    <div class="upgrade-banner" id="regular-banner">
+      <div>
+        <h3>Subscribe to keep your gift page active</h3>
+        <p>₦3,500/month keeps your LuBisMe page live and discoverable to fans.</p>
+      </div>
+      <button class="btn-gold" id="regular-subscribe-btn">Subscribe — ₦3,500/mo</button>
+    </div>
+
+    <div class="upgrade-banner">
+      <div>
+        <h3>Go Premium — claim a custom link</h3>
+        <p>Pick your own name instead of a random suffix. lubisme.com/tobi instead of lubisme.com/u/tobi-8f3k, for ₦8,500/month.</p>
+      </div>
+      <button class="btn-gold" id="premium-upgrade-btn">Upgrade — ₦8,500/mo</button>
+    </div>
+
+    <div class="section-head">
+      <h2>Your wallet addresses</h2>
+    </div>
+    <div class="wallets">
+      <div class="wallet-item">
+        <div class="chain-badge btc">₿</div>
+        <div class="wallet-info">
+          <div class="wallet-chain-name">Bitcoin (BTC)</div>
+          <div class="wallet-address">bc1qxy2kgdygjrsqtzq2n0yrf2493p83kkfjhx0wlh</div>
+        </div>
+        <button class="wallet-edit">Edit</button>
+      </div>
+      <div class="wallet-item">
+        <div class="chain-badge eth">Ξ</div>
+        <div class="wallet-info">
+          <div class="wallet-chain-name">Ethereum (ETH)</div>
+          <div class="wallet-address">0x71C7656EC7ab88b098defB751B7401B5f6d8976F</div>
+        </div>
+        <button class="wallet-edit">Edit</button>
+      </div>
+      <div class="wallet-item">
+        <div class="chain-badge sol">◎</div>
+        <div class="wallet-info">
+          <div class="wallet-chain-name">Solana (SOL)</div>
+          <div class="wallet-address empty">Not added yet</div>
+        </div>
+        <button class="wallet-edit">Add</button>
+      </div>
+      <div class="wallet-item">
+        <div class="chain-badge usdt">₮</div>
+        <div class="wallet-info">
+          <div class="wallet-chain-name">USDT (TRC-20)</div>
+          <div class="wallet-address empty">Not added yet</div>
+        </div>
+        <button class="wallet-edit">Add</button>
+      </div>
+    </div>
+
+    <div class="section-head">
+      <h2>Subscription</h2>
+    </div>
+    <div class="sub-info">
+      <div class="sub-info-item">
+        Status
+        <strong class="status-active">● Active</strong>
+      </div>
+      <div class="sub-info-item">
+        Plan
+        <strong>Regular — ₦3,500/mo</strong>
+      </div>
+      <div class="sub-info-item">
+        Next billing date
+        <strong>25 Sep 2026</strong>
+      </div>
+      <a href="mailto:support@lubisme.com?subject=Billing%20help" class="btn-ghost" style="text-decoration:none; display:inline-block; text-align:center;">Manage billing</a>
+    </div>
+  </div>
+
+  <!-- Paystack inline checkout SDK (v2) -->
+  <script src="https://js.paystack.co/v2/inline.js"></script>
+  <script>
+    // Public key only — safe to expose client-side. Replace with your
+    // real live/test public key from the Paystack dashboard.
+    const PAYSTACK_PUBLIC_KEY = 'pk_live_a84e92e519b16f19d92f0afc8e7189f1a6758f12';
+    const REGULAR_PLAN_CODE = 'PLN_regular_plan_code'; // from Paystack dashboard — the ₦3,500/mo plan, see paystack-integration.md
+    const PREMIUM_PLAN_CODE = 'PLN_b3xuixe85s450qm';
+
+    // Shared checkout logic for both plans — only the plan code and
+    // which banner shows "confirming" differ between them.
+    //
+    // IMPORTANT: this uses Paystack's v2 InlineJS API. v1 used
+    // PaystackPop.setup({...}) + .openIframe() — v2 instead uses
+    // `new PaystackPop()` + `.newTransaction({...})`, with named
+    // callbacks (onSuccess, onCancel, onError). Mixing the v1 pattern
+    // with the v2 script fails silently — no console error, the
+    // popup just never opens.
+    function startCheckout(planCode, email, userId, bannerId) {
+      if (!email || !userId) {
+        alert('Could not start checkout — please refresh and try again.');
+        return;
+      }
+
+      const popup = new PaystackPop();
+      popup.newTransaction({
+        key: PAYSTACK_PUBLIC_KEY,
+        email: email,
+        plan: planCode,
+        metadata: { user_id: userId },
+        onSuccess: (transaction) => {
+          // Payment succeeded client-side, but the actual plan is
+          // unlocked server-side by the webhook (see
+          // paystack-integration.md) — show an optimistic
+          // "confirming" state rather than flipping any UI here.
+          showPendingConfirmation(bannerId);
+        },
+        onCancel: () => {
+          // user closed the popup without completing payment — no-op
+        },
+        onError: (error) => {
+          console.error('Paystack checkout error:', error.message);
+          alert('Could not start checkout — please refresh and try again.');
+        }
+      });
+    }
+
+    // Called from dashboard-page.js once the profile has loaded,
+    // wired to each plan button's onclick.
+    window.subscribeToRegular = function(email, userId) {
+      startCheckout(REGULAR_PLAN_CODE, email, userId, 'regular-banner');
+    };
+    window.upgradeToPremium = function(email, userId) {
+      startCheckout(PREMIUM_PLAN_CODE, email, userId, null); // null = the only .upgrade-banner left once regular is subscribed
+    };
+
+    function showPendingConfirmation(bannerId){
+      const banner = bannerId ? document.getElementById(bannerId) : document.querySelector('.upgrade-banner');
+      if (!banner) return;
+      banner.innerHTML = `
+        <div>
+          <h3>Confirming your payment…</h3>
+          <p>This usually takes a few seconds. Refresh the page shortly — your custom link option will appear here once it's confirmed.</p>
+        </div>
+      `;
+    }
+  </script>
+
+  <!-- Page logic: fetches real profile/wallets/subscription data
+       from Supabase and renders it into the markup above. -->
+  <script type="module" src="js/dashboard-page.js"></script>
+
+</body>
+</html>
