@@ -16,10 +16,11 @@ async function initDashboard() {
     return;
   }
 
-  const [{ data: profile }, { data: wallets }, { data: subscriptions }] = await Promise.all([
+  const [{ data: profile }, { data: wallets }, { data: subscriptions }, { data: giftNotes }] = await Promise.all([
     supabase.from('profiles').select('*').eq('id', user.id).single(),
     supabase.from('wallet_addresses').select('*').eq('user_id', user.id),
     supabase.from('subscriptions').select('*').eq('user_id', user.id).order('created_at', { ascending: false }).limit(1),
+    supabase.from('gift_notes').select('*').eq('recipient_id', user.id).order('created_at', { ascending: false }).limit(20),
   ]);
 
   if (!profile) {
@@ -31,6 +32,7 @@ async function initDashboard() {
   renderGiftLink(profile);
   renderPlanPill(profile);
   renderWallets(wallets || []);
+  renderGiftNotes(giftNotes || []);
   renderSubscription(profile, subscriptions?.[0]);
   // profiles has no email column (Supabase Auth keeps email on the
   // auth.users side) — pass the real authenticated user here instead
@@ -92,7 +94,8 @@ const CHAIN_META = {
   BTC: { icon: '₿', label: 'Bitcoin (BTC)', cls: 'btc' },
   ETH: { icon: 'Ξ', label: 'Ethereum (ETH)', cls: 'eth' },
   SOL: { icon: '◎', label: 'Solana (SOL)', cls: 'sol' },
-  USDT: { icon: '₮', label: 'USDT (TRC-20)', cls: 'usdt' },
+  USDT_TRC20: { icon: '₮', label: 'USDT (TRC-20)', cls: 'usdt' },
+  USDT_ERC20: { icon: '₮', label: 'USDT (ERC-20)', cls: 'usdt' },
 };
 
 function renderWallets(wallets) {
@@ -101,7 +104,7 @@ function renderWallets(wallets) {
 
   const byChain = Object.fromEntries(wallets.map(w => [w.chain, w]));
 
-  for (const chain of ['BTC', 'ETH', 'SOL', 'USDT']) {
+  for (const chain of ['BTC', 'ETH', 'SOL', 'USDT_TRC20', 'USDT_ERC20']) {
     const meta = CHAIN_META[chain];
     const wallet = byChain[chain];
 
@@ -122,9 +125,75 @@ function renderWallets(wallets) {
   }
 }
 
+function renderGiftNotes(notes) {
+  const container = document.getElementById('gift-notes-list');
+  if (!container) return;
+
+  if (notes.length === 0) {
+    container.innerHTML = '<p class="gift-notes-empty">No notes yet — they\'ll show up here once a fan leaves one on your gift page.</p>';
+    return;
+  }
+
+  container.innerHTML = '';
+  notes.forEach(note => {
+    const chainLabel = CHAIN_META[note.chain]?.label || note.chain;
+    const when = formatRelativeTime(note.created_at);
+
+    const item = document.createElement('div');
+    item.className = 'gift-note-item';
+
+    // Built with DOM methods + textContent rather than innerHTML for
+    // the fan-supplied fields, since this is user-generated content
+    // from an unauthenticated public form — never trust it as safe
+    // HTML.
+    const top = document.createElement('div');
+    top.className = 'gift-note-top';
+    const senderEl = document.createElement('div');
+    senderEl.className = 'gift-note-sender';
+    senderEl.textContent = note.sender_name || 'Anonymous fan';
+    const chainEl = document.createElement('div');
+    chainEl.className = 'gift-note-chain';
+    chainEl.textContent = chainLabel;
+    top.append(senderEl, chainEl);
+
+    item.appendChild(top);
+
+    if (note.message) {
+      const msgEl = document.createElement('div');
+      msgEl.className = 'gift-note-message';
+      msgEl.textContent = note.message;
+      item.appendChild(msgEl);
+    }
+
+    const meta = document.createElement('div');
+    meta.className = 'gift-note-meta';
+    const txEl = document.createElement('span');
+    txEl.className = 'gift-note-tx';
+    txEl.textContent = note.transaction_reference || '';
+    const timeEl = document.createElement('span');
+    timeEl.textContent = when;
+    meta.append(txEl, timeEl);
+    item.appendChild(meta);
+
+    container.appendChild(item);
+  });
+}
+
+function formatRelativeTime(isoString) {
+  const diffMs = Date.now() - new Date(isoString).getTime();
+  const mins = Math.floor(diffMs / 60000);
+  if (mins < 1) return 'just now';
+  if (mins < 60) return `${mins}m ago`;
+  const hours = Math.floor(mins / 60);
+  if (hours < 24) return `${hours}h ago`;
+  const days = Math.floor(hours / 24);
+  return `${days}d ago`;
+}
+
 function openWalletEditor(chain, existingWallet) {
+  const label = CHAIN_META[chain]?.label || chain;
   const newAddress = prompt(
-    `Enter your ${chain} address (leave blank and tap OK to remove this wallet):`,
+    `Enter your ${label} address (leave blank and tap OK to remove this wallet):`,
     existingWallet?.address || ''
   );
 
@@ -135,7 +204,7 @@ function openWalletEditor(chain, existingWallet) {
     // no-op — but only ask to confirm if there was actually something
     // to remove.
     if (existingWallet) {
-      const confirmed = confirm(`Remove your ${chain} address? Fans won't be able to send you ${chain} gifts until you add a new one.`);
+      const confirmed = confirm(`Remove your ${label} address? Fans won't be able to send you ${label} gifts until you add a new one.`);
       if (confirmed) removeWalletAddress(chain);
     }
     return;

@@ -39,7 +39,29 @@ async function initProfilePage() {
   renderProfile(profile);
   renderWalletTabs(wallets);
   selectChain(wallets[0].chain, wallets); // show the first available chain by default
+
+  currentRecipientId = profile.id;
+  wireNoteForm();
+
+  // Beginner's guide is a premium-only feature the creator unlocks
+  // for their fans — only shown on a premium creator's page.
+  if (profile.plan === 'premium' && profile.plan_status === 'active') {
+    document.getElementById('guide-card')?.classList.remove('hidden');
+    wireGuideToggle();
+  }
 }
+
+function wireGuideToggle() {
+  const toggle = document.getElementById('guide-toggle');
+  const content = document.getElementById('guide-content');
+  toggle?.addEventListener('click', () => {
+    content.classList.toggle('hidden');
+  });
+}
+
+// The recipient's profile id, set once the page successfully loads —
+// the note form needs this to know who the note is being left for.
+let currentRecipientId = null;
 
 // ------------------------------------------------------------
 // Supports both query-string (?slug=x) and path-based routing.
@@ -95,7 +117,8 @@ function renderWalletTabs(wallets) {
     BTC: { icon: '₿', label: 'BTC' },
     ETH: { icon: 'Ξ', label: 'ETH' },
     SOL: { icon: '◎', label: 'SOL' },
-    USDT: { icon: '₮', label: 'USDT' },
+    USDT_TRC20: { icon: '₮', label: 'USDT·TRC20' },
+    USDT_ERC20: { icon: '₮', label: 'USDT·ERC20' },
   };
 
   wallets.forEach((w, i) => {
@@ -124,7 +147,8 @@ function selectChain(chain, wallets) {
     BTC: 'Bitcoin (BTC)',
     ETH: 'Ethereum (ETH)',
     SOL: 'Solana (SOL)',
-    USDT: `USDT${wallet.network ? ' (' + wallet.network + ')' : ''}`,
+    USDT_TRC20: 'USDT (TRC-20)',
+    USDT_ERC20: 'USDT (ERC-20)',
   };
 
   document.getElementById('chain-title').textContent = CHAIN_LABELS[chain];
@@ -166,6 +190,67 @@ function showNoWallets(profile) {
       <p style="color:var(--muted); font-size:14px;">This creator hasn't added any wallet addresses yet — check back soon.</p>
     </div>
   `;
+}
+
+// ------------------------------------------------------------
+// Optional "leave a note" form — lets a fan log their name, a
+// transaction reference, and a short message after sending a gift.
+// This is purely a courtesy record for the creator; LuBisMe has no
+// way to verify any of it actually corresponds to a real transaction.
+function wireNoteForm() {
+  const toggle = document.getElementById('note-toggle');
+  const form = document.getElementById('note-form');
+  const submitBtn = document.getElementById('note-submit-btn');
+
+  toggle.addEventListener('click', () => {
+    form.classList.toggle('hidden');
+  });
+
+  submitBtn.addEventListener('click', async () => {
+    const errorEl = document.getElementById('note-error');
+    const successEl = document.getElementById('note-success');
+    errorEl.classList.add('hidden');
+    successEl.classList.add('hidden');
+
+    const senderName = document.getElementById('note-name').value.trim();
+    const transactionReference = document.getElementById('note-tx').value.trim();
+    const message = document.getElementById('note-message').value.trim();
+
+    if (!senderName && !transactionReference && !message) {
+      errorEl.textContent = 'Fill in at least one field, or skip this step.';
+      errorEl.classList.remove('hidden');
+      return;
+    }
+
+    const activeTab = document.querySelector('.chain-tab.active');
+    const chain = activeTab ? activeTab.dataset.chain : currentWallets[0]?.chain;
+
+    submitBtn.disabled = true;
+    submitBtn.textContent = 'Sending…';
+
+    const { error } = await supabase.from('gift_notes').insert({
+      recipient_id: currentRecipientId,
+      chain,
+      sender_name: senderName || null,
+      transaction_reference: transactionReference || null,
+      message: message || null,
+    });
+
+    submitBtn.disabled = false;
+    submitBtn.textContent = 'Send note';
+
+    if (error) {
+      errorEl.textContent = 'Could not send that — please try again.';
+      errorEl.classList.remove('hidden');
+      return;
+    }
+
+    successEl.textContent = 'Thank you! Your note has been sent.';
+    successEl.classList.remove('hidden');
+    document.getElementById('note-name').value = '';
+    document.getElementById('note-tx').value = '';
+    document.getElementById('note-message').value = '';
+  });
 }
 
 // ------------------------------------------------------------
