@@ -205,6 +205,102 @@
   }
   .warning-note strong{color:var(--coral);}
 
+  .guide-card{
+    margin-bottom:14px;
+  }
+  .guide-toggle{
+    text-align:center;
+    font-size:13.5px;
+    color:var(--gold);
+    font-weight:600;
+    cursor:pointer;
+    padding:14px;
+    background:var(--bg-raise);
+    border:1px solid var(--gold);
+    border-radius:14px;
+  }
+  .guide-content{
+    background:var(--bg-raise);
+    border:1px solid var(--line);
+    border-radius:16px;
+    padding:22px 20px;
+    margin-top:8px;
+  }
+  .guide-content h3{
+    font-family:'Sora',sans-serif;
+    font-size:16px;
+    margin-bottom:14px;
+  }
+  .guide-step{
+    font-size:13px;
+    color:var(--muted);
+    line-height:1.6;
+    margin-bottom:12px;
+  }
+  .guide-step strong{color:var(--fg);}
+
+  .note-card{
+    margin-top:14px;
+  }
+  .note-toggle{
+    text-align:center;
+    font-size:13.5px;
+    color:var(--gold);
+    font-weight:600;
+    cursor:pointer;
+    padding:14px;
+  }
+  .note-form{
+    background:var(--bg-raise);
+    border:1px solid var(--line);
+    border-radius:16px;
+    padding:22px 20px;
+    margin-top:4px;
+  }
+  .note-hint{
+    font-size:12.5px;
+    color:var(--muted);
+    margin-bottom:16px;
+    line-height:1.5;
+  }
+  .note-form .field{margin-bottom:14px;}
+  .note-form label{
+    display:block;
+    font-size:12.5px;
+    color:var(--muted);
+    margin-bottom:6px;
+  }
+  .note-form input{
+    width:100%;
+    background:var(--bg-raise-2);
+    border:1px solid var(--line);
+    border-radius:10px;
+    padding:11px 13px;
+    color:var(--fg);
+    font-size:14px;
+    font-family:'Inter',sans-serif;
+  }
+  .note-form input:focus{outline:none; border-color:var(--gold);}
+  .fine-print{
+    font-size:12.5px;
+    margin:0 0 14px;
+    line-height:1.5;
+  }
+  #note-error{color:var(--coral);}
+  #note-success{color:var(--gold);}
+  .btn-gold-full{
+    width:100%;
+    background:var(--gold);
+    color:#1A0F1F;
+    font-weight:700;
+    font-size:14px;
+    padding:13px;
+    border-radius:10px;
+    border:none;
+    cursor:pointer;
+    margin-top:4px;
+  }
+
   footer{
     margin-top:32px;
     text-align:center;
@@ -265,6 +361,44 @@
       <div class="warning-note">
         <span>⚠️</span>
         <span><strong>Double-check the address</strong> and network before sending. Gifts sent to the wrong address or wrong network can't be recovered.</span>
+      </div>
+    </div>
+
+    <div class="guide-card hidden" id="guide-card">
+      <div class="guide-toggle" id="guide-toggle">
+        <span>🔰 New to crypto? See how to send a gift →</span>
+      </div>
+      <div class="guide-content hidden" id="guide-content">
+        <h3>Sending crypto for the first time</h3>
+        <p class="guide-step"><strong>1. Get a wallet app.</strong> Binance, Trust Wallet, and Blockchain.com are common, free choices — download one and create an account.</p>
+        <p class="guide-step"><strong>2. Fund your wallet.</strong> Most apps let you buy crypto directly with a card or bank transfer inside the app.</p>
+        <p class="guide-step"><strong>3. Copy the address above</strong> for whichever coin you want to send — or scan the QR code directly from your wallet app's "Send" screen.</p>
+        <p class="guide-step"><strong>4. Paste the address into your wallet app's "Send" or "Withdraw" screen,</strong> enter the amount, and confirm. Double-check the network matches (e.g. TRC-20 vs ERC-20 for USDT) — sending on the wrong network can lose the gift.</p>
+        <p class="guide-step"><strong>5. That's it.</strong> The gift goes directly to the creator — it usually arrives within a few minutes, depending on the network.</p>
+      </div>
+    </div>
+
+    <div class="note-card" id="note-card">
+      <div class="note-toggle" id="note-toggle">
+        <span>Sent your gift? Leave a note (optional) →</span>
+      </div>
+      <div class="note-form hidden" id="note-form">
+        <p class="note-hint">This note isn't verified by LuBisMe — it's just a courtesy so the creator knows it was you.</p>
+        <div class="field">
+          <label for="note-name">Your name (optional)</label>
+          <input id="note-name" type="text" placeholder="e.g. Ada from Lagos" />
+        </div>
+        <div class="field">
+          <label for="note-tx">Transaction ID / hash (optional)</label>
+          <input id="note-tx" type="text" placeholder="Paste your transaction reference" />
+        </div>
+        <div class="field">
+          <label for="note-message">Message (optional)</label>
+          <input id="note-message" type="text" placeholder="e.g. Loved your last post!" />
+        </div>
+        <p class="fine-print hidden" id="note-error"></p>
+        <p class="fine-print hidden" id="note-success"></p>
+        <button class="btn-gold-full" id="note-submit-btn">Send note</button>
       </div>
     </div>
 
