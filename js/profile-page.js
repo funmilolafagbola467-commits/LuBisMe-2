@@ -92,26 +92,27 @@ function getSlugFromUrl() {
 function renderProfile(profile) {
   document.title = `${profile.display_name} — LuBisMe`;
 
-  const initials = profile.display_name
-    .split(' ')
-    .map(w => w[0])
-    .join('')
-    .slice(0, 2)
-    .toUpperCase();
+  // Safely get initials even if the name has no spaces
+  const nameParts = profile.display_name.split(' ');
+  const initials = nameParts.length > 1 
+    ? (nameParts[0][0] + nameParts[1][0]).toUpperCase()
+    : profile.display_name.slice(0, 2).toUpperCase();
 
   document.querySelector('.avatar').textContent = initials;
   document.querySelector('h1').textContent = profile.display_name;
-  document.querySelector('.bio').textContent = profile.bio || `Send ${profile.display_name.split(' ')[0]} a gift 🎁`;
-  document.querySelector('.gift-prompt h2').textContent = `Send ${profile.display_name.split(' ')[0]} a gift`;
+  
+  // Safe string splitting fallback for bio prompts
+  const firstWord = profile.display_name.split(' ')[0] || profile.display_name;
+  document.querySelector('.bio').textContent = profile.bio || `Send ${firstWord} a gift 🎁`;
+  document.querySelector('.gift-prompt h2').textContent = `Send ${firstWord} a gift`;
 
   const badge = document.querySelector('.verified-badge');
   if (badge) {
-    // Only show the badge for confirmed premium accounts — never
-    // let this be inferred from anything the fan-facing page alone
-    // could spoof; it comes straight from the DB record.
+    // This hides the badge correctly for free tier accounts!
     badge.style.display = profile.is_premium_slug ? 'inline-flex' : 'none';
   }
 }
+                                                                                     }
 
 // ------------------------------------------------------------
 let currentWallets = [];
