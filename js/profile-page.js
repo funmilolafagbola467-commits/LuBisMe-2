@@ -69,11 +69,19 @@ let currentRecipientId = null;
 // pull the slug from the path instead.
 // ------------------------------------------------------------
 function getSlugFromUrl() {
+  // 1. First, check if Vercel mapped it to a query parameter (?slug=xyz)
   const params = new URLSearchParams(window.location.search);
   if (params.get('slug')) return params.get('slug');
 
+  // 2. Clean the path parts
   const pathParts = window.location.pathname.split('/').filter(Boolean);
-  // handles both /tobi (premium) and /u/tobi-8f3k (free tier)
+  
+  // If the path is just 'profile.html', ignore it so it doesn't get used as a username
+  if (pathParts[0] === 'profile.html') {
+    return null;
+  }
+
+  // 3. Handle both /u/tobi-8f3k and /tobi formats if accessed directly
   if (pathParts[0] === 'u' && pathParts[1]) return pathParts[1];
   if (pathParts[0]) return pathParts[0];
 
