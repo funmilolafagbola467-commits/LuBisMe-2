@@ -3,7 +3,7 @@
 // Handles: sign up, log in, wallet address save, slug generation
 // ============================================================
 
-import { supabase, generateSlug } from './supabase-client.js';
+import { supabase, generateSlug } from './supabase-client.js?v=2';
 
 let currentUserId = null; // set after successful sign-up
 

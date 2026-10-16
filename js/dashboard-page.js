@@ -5,7 +5,7 @@
 // dashboard.html (replacing the hardcoded demo data).
 // ============================================================
 
-import { supabase, getCurrentUser } from './supabase-client.js';
+import { supabase, getCurrentUser } from './supabase-client.js?v=2';
 
 async function initDashboard() {
   const user = await getCurrentUser();

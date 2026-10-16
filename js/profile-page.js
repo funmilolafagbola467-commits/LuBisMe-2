@@ -5,7 +5,7 @@
 // wallets — no login required, this is what fans see.
 // ============================================================
 
-import { supabase } from './supabase-client.js';
+import { supabase } from './supabase-client.js?v=2';
 
 async function initProfilePage() {
   const slug = getSlugFromUrl();
