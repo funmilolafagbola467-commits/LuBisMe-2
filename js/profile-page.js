@@ -5,7 +5,7 @@
 // wallets — no login required, this is what fans see.
 // ============================================================
 
-import { supabase } from './supabase-client.js?v=2';
+import { supabase } from './supabase-client.js';
 
 async function initProfilePage() {
   const slug = getSlugFromUrl();
@@ -112,7 +112,6 @@ function renderProfile(profile) {
     badge.style.display = profile.is_premium_slug ? 'inline-flex' : 'none';
   }
 }
-                                                                                     }
 
 // ------------------------------------------------------------
 let currentWallets = [];
