@@ -55,7 +55,7 @@ function renderIdentity(profile) {
 
 // ------------------------------------------------------------
 function renderGiftLink(profile) {
-  const url = `lubisme.com/${profile.is_premium_slug ? '' : 'u/'}${profile.slug}`;
+  const url = `lubisme.com/${profile.slug}`;
   const urlEl = document.querySelector('.link-card-url');
   urlEl.textContent = url;
 
