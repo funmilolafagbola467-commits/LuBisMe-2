@@ -1,0 +1,428 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title></title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Sora:wght@400;500;600;700;800&family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --bg:#1A0F1F;
+    --bg-raise:#241628;
+    --bg-raise-2:#2E1B33;
+    --fg:#FAF6F2;
+    --muted:#B8A8BC;
+    --gold:#F2B807;
+    --coral:#FF6B7A;
+    --line:#3A2640;
+    --green:#3FBF7F;
+  }
+  *{box-sizing:border-box; margin:0; padding:0;}
+  body{
+    background:var(--bg);
+    color:var(--fg);
+    font-family:'Inter',sans-serif;
+    min-height:100vh;
+    display:flex;
+    justify-content:center;
+    padding:48px 20px 40px;
+  }
+  a{color:inherit; text-decoration:none;}
+
+  .wrap{
+    width:100%;
+    max-width:440px;
+  }
+
+  /* PROFILE HEADER */
+  .profile{
+    display:flex;
+    flex-direction:column;
+    align-items:center;
+    text-align:center;
+    margin-bottom:32px;
+  }
+  .avatar{
+    width:88px;
+    height:88px;
+    border-radius:20px;
+    background:linear-gradient(145deg, var(--coral), #d94f5c);
+    display:flex;
+    align-items:center;
+    justify-content:center;
+    font-family:'Sora',sans-serif;
+    font-weight:700;
+    font-size:32px;
+    margin-bottom:18px;
+  }
+  .verified-badge{
+    display:inline-flex;
+    align-items:center;
+    gap:5px;
+    background:rgba(242,184,7,0.14);
+    border:1px solid var(--gold);
+    color:var(--gold);
+    font-size:11.5px;
+    font-weight:700;
+    padding:4px 12px;
+    border-radius:100px;
+    margin-bottom:12px;
+  }
+  h1{
+    font-family:'Sora',sans-serif;
+    font-size:24px;
+    font-weight:700;
+    margin-bottom:8px;
+  }
+  .bio{
+    font-size:14px;
+    color:var(--muted);
+    max-width:320px;
+    line-height:1.55;
+  }
+
+  /* GIFT PROMPT */
+  .gift-prompt{
+    text-align:center;
+    margin-bottom:24px;
+  }
+  .gift-prompt h2{
+    font-family:'Sora',sans-serif;
+    font-size:16px;
+    font-weight:700;
+    margin-bottom:4px;
+  }
+  .gift-prompt p{
+    font-size:13px;
+    color:var(--muted);
+  }
+
+  /* CHAIN SELECTOR */
+  .chain-tabs{
+    display:grid;
+    grid-template-columns:repeat(4, 1fr);
+    gap:8px;
+    margin-bottom:20px;
+  }
+  .chain-tab{
+    background:var(--bg-raise);
+    border:1px solid var(--line);
+    border-radius:12px;
+    padding:14px 6px;
+    text-align:center;
+    cursor:pointer;
+    transition:border-color .15s ease, background .15s ease;
+  }
+  .chain-tab.active{
+    border-color:var(--gold);
+    background:var(--bg-raise-2);
+  }
+  .chain-tab-icon{
+    font-size:20px;
+    margin-bottom:6px;
+  }
+  .chain-tab-name{
+    font-size:11.5px;
+    font-weight:600;
+    color:var(--muted);
+  }
+  .chain-tab.active .chain-tab-name{color:var(--fg);}
+
+  /* GIFT CARD */
+  .gift-card{
+    background:var(--bg-raise);
+    border:1px solid var(--line);
+    border-radius:20px;
+    padding:28px 24px;
+    text-align:center;
+  }
+  .gift-card-chain{
+    font-family:'Sora',sans-serif;
+    font-size:15px;
+    font-weight:700;
+    margin-bottom:20px;
+  }
+  .qr-box{
+    width:180px;
+    height:180px;
+    background:#fff;
+    border-radius:14px;
+    margin:0 auto 20px;
+    display:flex;
+    align-items:center;
+    justify-content:center;
+    padding:12px;
+  }
+  .qr-box img{width:100%; height:100%;}
+
+  .address-box{
+    background:var(--bg-raise-2);
+    border:1px solid var(--line);
+    border-radius:10px;
+    padding:14px 16px;
+    display:flex;
+    align-items:center;
+    gap:10px;
+    margin-bottom:16px;
+  }
+  .address-text{
+    font-family:monospace;
+    font-size:12.5px;
+    color:var(--muted);
+    flex:1;
+    text-align:left;
+    word-break:break-all;
+  }
+  .copy-btn{
+    background:var(--gold);
+    color:#1A0F1F;
+    border:none;
+    font-size:12.5px;
+    font-weight:700;
+    padding:9px 14px;
+    border-radius:8px;
+    cursor:pointer;
+    flex-shrink:0;
+    white-space:nowrap;
+  }
+  .copy-btn.copied{
+    background:var(--green);
+  }
+
+  .warning-note{
+    display:flex;
+    gap:8px;
+    align-items:flex-start;
+    text-align:left;
+    background:rgba(255,107,122,0.08);
+    border:1px solid rgba(255,107,122,0.3);
+    border-radius:10px;
+    padding:12px 14px;
+    font-size:12px;
+    color:var(--muted);
+    line-height:1.5;
+  }
+  .warning-note strong{color:var(--coral);}
+
+  .guide-card{
+    margin-bottom:14px;
+  }
+  .guide-toggle{
+    text-align:center;
+    font-size:13.5px;
+    color:var(--gold);
+    font-weight:600;
+    cursor:pointer;
+    padding:14px;
+    background:var(--bg-raise);
+    border:1px solid var(--gold);
+    border-radius:14px;
+  }
+  .guide-content{
+    background:var(--bg-raise);
+    border:1px solid var(--line);
+    border-radius:16px;
+    padding:22px 20px;
+    margin-top:8px;
+  }
+  .guide-content h3{
+    font-family:'Sora',sans-serif;
+    font-size:16px;
+    margin-bottom:14px;
+  }
+  .guide-step{
+    font-size:13px;
+    color:var(--muted);
+    line-height:1.6;
+    margin-bottom:12px;
+  }
+  .guide-step strong{color:var(--fg);}
+
+  .note-card{
+    margin-top:14px;
+  }
+  .note-toggle{
+    text-align:center;
+    font-size:13.5px;
+    color:var(--gold);
+    font-weight:600;
+    cursor:pointer;
+    padding:14px;
+  }
+  .note-form{
+    background:var(--bg-raise);
+    border:1px solid var(--line);
+    border-radius:16px;
+    padding:22px 20px;
+    margin-top:4px;
+  }
+  .note-hint{
+    font-size:12.5px;
+    color:var(--muted);
+    margin-bottom:16px;
+    line-height:1.5;
+  }
+  .note-form .field{margin-bottom:14px;}
+  .note-form label{
+    display:block;
+    font-size:12.5px;
+    color:var(--muted);
+    margin-bottom:6px;
+  }
+  .note-form input{
+    width:100%;
+    background:var(--bg-raise-2);
+    border:1px solid var(--line);
+    border-radius:10px;
+    padding:11px 13px;
+    color:var(--fg);
+    font-size:14px;
+    font-family:'Inter',sans-serif;
+  }
+  .note-form input:focus{outline:none; border-color:var(--gold);}
+  .fine-print{
+    font-size:12.5px;
+    margin:0 0 14px;
+    line-height:1.5;
+  }
+  #note-error{color:var(--coral);}
+  #note-success{color:var(--gold);}
+  .btn-gold-full{
+    width:100%;
+    background:var(--gold);
+    color:#1A0F1F;
+    font-weight:700;
+    font-size:14px;
+    padding:13px;
+    border-radius:10px;
+    border:none;
+    cursor:pointer;
+    margin-top:4px;
+  }
+
+  footer{
+    margin-top:32px;
+    text-align:center;
+  }
+  footer p{
+    font-size:12px;
+    color:var(--muted);
+    line-height:1.6;
+  }
+  footer a{
+    color:var(--gold);
+    font-weight:600;
+  }
+</style>
+</head>
+<body>
+  <div class="wrap">
+    <div class="profile">
+      <div class="avatar"></div>
+      <div class="verified-badge"></div>
+      <h1></h1>
+      <p class="bio">Making music, sharing the journey. Every gift helps me keep creating 🎶</p>
+    </div>
+
+    <div class="gift-prompt">
+      <h2>Send a gift</h2>
+      <p>Pick a coin below, then send from your own wallet app</p>
+    </div>
+
+    <div class="chain-tabs">
+      <div class="chain-tab active" data-chain="btc">
+        <div class="chain-tab-icon">₿</div>
+        <div class="chain-tab-name">BTC</div>
+      </div>
+      <div class="chain-tab" data-chain="eth">
+        <div class="chain-tab-icon">Ξ</div>
+        <div class="chain-tab-name">ETH</div>
+      </div>
+      <div class="chain-tab" data-chain="sol">
+        <div class="chain-tab-icon">◎</div>
+        <div class="chain-tab-name">SOL</div>
+      </div>
+      <div class="chain-tab" data-chain="usdt">
+        <div class="chain-tab-icon">₮</div>
+        <div class="chain-tab-name">USDT</div>
+      </div>
+    </div>
+
+    <div class="gift-card">
+      <div class="gift-card-chain" id="chain-title">Bitcoin (BTC)</div>
+      <div class="qr-box">
+        <img id="qr-img" src="https://api.qrserver.com/v1/create-qr-code/?size=200x200&data=bc1qxy2kgdygjrsqtzq2n0yrf2493p83kkfjhx0wlh" alt="QR code for wallet address" />
+      </div>
+      <div class="address-box">
+        <div class="address-text" id="address-text">bc1qxy2kgdygjrsqtzq2n0yrf2493p83kkfjhx0wlh</div>
+        <button class="copy-btn" id="copy-btn">Copy</button>
+      </div>
+      <div class="warning-note">
+        <span>⚠️</span>
+        <span><strong>Double-check the address</strong> and network before sending. Gifts sent to the wrong address or wrong network can't be recovered.</span>
+      </div>
+    </div>
+
+    <div class="guide-card hidden" id="guide-card">
+      <div class="guide-toggle" id="guide-toggle">
+        <span>🔰 New to crypto? See how to send a gift →</span>
+      </div>
+      <div class="guide-content hidden" id="guide-content">
+        <h3>Sending crypto for the first time</h3>
+        <p class="guide-step"><strong>1. Get a wallet app.</strong> Binance, Trust Wallet, and Blockchain.com are common, free choices — download one and create an account.</p>
+        <p class="guide-step"><strong>2. Fund your wallet.</strong> Most apps let you buy crypto directly with a card or bank transfer inside the app.</p>
+        <p class="guide-step"><strong>3. Copy the address above</strong> for whichever coin you want to send — or scan the QR code directly from your wallet app's "Send" screen.</p>
+        <p class="guide-step"><strong>4. Paste the address into your wallet app's "Send" or "Withdraw" screen,</strong> enter the amount, and confirm. Double-check the network matches (e.g. TRC-20 vs ERC-20 for USDT) — sending on the wrong network can lose the gift.</p>
+        <p class="guide-step"><strong>5. That's it.</strong> The gift goes directly to the creator — it usually arrives within a few minutes, depending on the network.</p>
+      </div>
+    </div>
+
+    <div class="note-card" id="note-card">
+      <div class="note-toggle" id="note-toggle">
+        <span>Sent your gift? Leave a note (optional) →</span>
+      </div>
+      <div class="note-form hidden" id="note-form">
+        <p class="note-hint">This note isn't verified by LuBisMe — it's just a courtesy so the creator knows it was you.</p>
+        <div class="field">
+          <label for="note-name">Your name (optional)</label>
+          <input id="note-name" type="text" placeholder="e.g. Ada from Lagos" />
+        </div>
+        <div class="field">
+          <label for="note-tx">Transaction ID / hash (optional)</label>
+          <input id="note-tx" type="text" placeholder="Paste your transaction reference" />
+        </div>
+        <div class="field">
+          <label for="note-message">Message (optional)</label>
+          <input id="note-message" type="text" placeholder="e.g. Loved your last post!" />
+        </div>
+        <p class="fine-print hidden" id="note-error"></p>
+        <p class="fine-print hidden" id="note-success"></p>
+        <button class="btn-gold-full" id="note-submit-btn">Send note</button>
+      </div>
+    </div>
+
+    <footer>
+      <p id="footer-disclaimer">LuBisMe is an intermediary link only. Gifts move directly from your wallet to the recipient's — LuBisMe never holds or processes funds.<br><a href="/auth.html">Create your own LuBisMe page →</a></p>
+    </footer>
+  </div>
+
+  <!-- Real page logic: reads the slug from the URL, loads that
+       user's profile + wallets from Supabase, and renders the
+       chain tabs, QR code, and address dynamically. Replaces the
+       static demo data that was hardcoded here before. -->
+  <!-- TEMPORARY DEBUG AID — catches any JS error and shows it directly
+       on screen in red, so it can be read on a phone with no console
+       access. Safe to remove once the underlying issue is found. -->
+  <script>
+    window.addEventListener('error', function(e) {
+      const box = document.createElement('div');
+      box.style.cssText = 'position:fixed; bottom:0; left:0; right:0; background:#FF6B7A; color:#1A0F1F; font-family:monospace; font-size:12px; padding:14px; z-index:9999; max-height:40vh; overflow:auto;';
+      box.textContent = 'JS ERROR: ' + e.message + ' (line ' + e.lineno + ', file: ' + (e.filename ? e.filename.split('/').pop() : 'unknown') + ')';
+      document.body.appendChild(box);
+    });
+  </script>
+
+  <script type="module" src="js/profile-page.js?v=4"></script>
+</body>
+</html>
