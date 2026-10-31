@@ -236,19 +236,36 @@ function wireNoteForm() {
     submitBtn.disabled = true;
     submitBtn.textContent = 'Sending…';
 
-    const { error } = await supabase.from('gift_notes').insert({
-      recipient_id: currentRecipientId,
-      chain,
-      sender_name: senderName || null,
-      transaction_reference: transactionReference || null,
-      message: message || null,
-    });
+    // The server function saves the note, applies the anti-spam
+    // limit, and emails the creator. The creator's email address
+    // never reaches this page.
+    let failure = null;
+    try {
+      const response = await fetch('/api/submit-note', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          recipient_id: currentRecipientId,
+          chain,
+          sender_name: senderName,
+          transaction_reference: transactionReference,
+          message,
+        }),
+      });
+      if (!response.ok) {
+        const body = await response.json().catch(() => ({}));
+        failure = body.error || 'Could not send that — please try again.';
+      }
+    } catch (err) {
+      console.error('Gift note request failed:', err);
+      failure = 'Could not send that — please check your connection and try again.';
+    }
 
     submitBtn.disabled = false;
     submitBtn.textContent = 'Send note';
 
-    if (error) {
-      errorEl.textContent = 'Could not send that — please try again.';
+    if (failure) {
+      errorEl.textContent = failure;
       errorEl.classList.remove('hidden');
       return;
     }
