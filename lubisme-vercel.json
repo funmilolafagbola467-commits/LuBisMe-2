@@ -1,0 +1,21 @@
+{
+  "redirects": [
+    { "source": "/u/:slug", "destination": "/:slug", "permanent": false }
+  ],
+  "rewrites": [
+    { "source": "/dashboard", "destination": "/dashboard.html" },
+    { "source": "/login", "destination": "/auth.html" },
+    { "source": "/signup", "destination": "/auth.html" },
+    { "source": "/terms", "destination": "/terms.html" },
+    { "source": "/privacy", "destination": "/privacy.html" },
+    { "source": "/:slug", "destination": "/profile.html?slug=:slug" }
+  ],
+  "headers": [
+    {
+      "source": "/profile.html",
+      "headers": [
+        { "key": "Cache-Control", "value": "no-store, must-revalidate" }
+      ]
+    }
+  ]
+}
